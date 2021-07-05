@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hiking index{% endblock %}
+
+{% block body %}
+    <h1>Hiking index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Duration</th>
+                <th>Distance</th>
+                <th>Elevation_gain</th>
+                <th>Highest_point</th>
+                <th>Lowest_point</th>
+                <th>Return_start_point</th>
+                <th>Region</th>
+                <th>Municipality</th>
+                <th>Description</th>
+                <th>Picture</th>
+                <th>Modified_at</th>
+                <th>Created_at</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for hiking in hikings %}
+            <tr>
+                <td>{{ hiking.id }}</td>
+                <td>{{ hiking.email }}</td>
+                <td>{{ hiking.title }}</td>
+                <td>{{ hiking.duration }}</td>
+                <td>{{ hiking.distance }}</td>
+                <td>{{ hiking.elevationGain }}</td>
+                <td>{{ hiking.highestPoint }}</td>
+                <td>{{ hiking.lowestPoint }}</td>
+                <td>{{ hiking.returnStartPoint ? 'Yes' : 'No' }}</td>
+                <td>{{ hiking.region }}</td>
+                <td>{{ hiking.municipality }}</td>
+                <td>{{ hiking.description }}</td>
+                <td>{{ hiking.picture }}</td>
+                <td>{{ hiking.modifiedAt ? hiking.modifiedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ hiking.createdAt ? hiking.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('hiking_show', {'id': hiking.id}) }}">show</a>
+                    <a href="{{ path('hiking_edit', {'id': hiking.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="16">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('hiking_new') }}">Create new</a>
+{% endblock %}
