@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <th>Duration</th>
-                <td>{{ hiking.duration }}</td>
+                <td>{{ hiking.duration | date('H:i:s')}}</td>
             </tr>
             <tr>
                 <th>Distance</th>
@@ -77,9 +77,9 @@
         </tbody>
     </table>
 
-    <a href="{{ path('hiking_index') }}">back to list</a>
+    <a href="{{ path('hiking.index') }}">back to list</a>
 
-    <a href="{{ path('hiking_edit', {'id': hiking.id}) }}">edit</a>
+    <a href="{{ path('hiking.edit', {'id': hiking.id}) }}">edit</a>
 
     {{ include('hiking/_delete_form.html.twig') }}
 {% endblock %}

@@ -16,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,16 +34,13 @@ class HikingController extends AbstractController
      */
     public function index(HikingRepository $hikingRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        // $this->search($hikingRepository, $paginator, $request);
-        $donnees = $hikingRepository->findBy([],['created_at' => 'desc']);
-        // $donnees = $this->search($request, $hikingRepository);
-        $hikings = $paginator->paginate($donnees, $request->query->getInt('page', 1), 5);
+        $data    = $hikingRepository->findBy([],['created_at' => 'desc']);
+        $hikings = $paginator->paginate($data, $request->query->getInt('page', 1), 5);
 
         return $this->render('hiking/index.html.twig', [
-            'hikings' => $hikings,
+            'hikings'       => $hikings,
         ]);
     }
-
 
     public function search(): Response
     {
@@ -71,14 +68,12 @@ class HikingController extends AbstractController
                 'mapped' => true,
                 'required' => false,
             ])
+            ->add('return_start_point', CheckboxType::class,[
+                'required' => false
+            ])
             ->add('submit', SubmitType::class)
             ->getForm();  
 
-        // if ($form->isSubmitted() && $form->isValid()) {
-        //     dump('coucou'); exit;
-        // }
-
-        // $hikings = $paginator->paginate($donnees, $request->query->getInt('page', 1), 5);
         return $this->render('hiking/search.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -87,14 +82,15 @@ class HikingController extends AbstractController
     /**
      * @Route("/handleSearch", name="handleSearch")
      */
-    public function handleSearch(Request $request, HikingRepository $hikingRepository)
+    public function handleSearch(Request $request, HikingRepository $hikingRepository, PaginatorInterface $paginator)
     {
-        $data = $request->request->get('form');
-        dump($data);
-        $hikingRepository->findBySearch($data);
-        dump($request->request->get('form')); exit;
-    }
+        $data    = $hikingRepository->findBySearch($request->request->get('form'));
+        $hikings = $paginator->paginate($data, $request->query->getInt('page', 1), 5);
 
+        return $this->render('hiking/index.html.twig', [
+            'hikings' => $hikings,
+        ]);
+    }
 
     /**
      * @Route("/new", name="new", methods={"GET","POST"})
@@ -119,7 +115,7 @@ class HikingController extends AbstractController
             $entityManager->persist($hiking);
             $entityManager->flush();
 
-            return $this->redirectToRoute('hiking_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('hiking/new.html.twig', [
@@ -150,7 +146,7 @@ class HikingController extends AbstractController
             $hiking->setModifiedAt(new \DateTimeImmutable());
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('hiking_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('hiking/edit.html.twig', [
@@ -170,6 +166,6 @@ class HikingController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('hiking_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
     }
 }
