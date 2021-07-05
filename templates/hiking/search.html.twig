@@ -1,0 +1,25 @@
+{{ form_start(form) }}
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.search) }}
+        </div>
+        <div class="col">
+            <span id="difficulty-text">Difficulté de <b>facile</b> à <b>très difficile</b></span>
+            <div id="slider-range-difficulty"></div>
+            {{ form_row(form.difficulty_min) }}
+            {{ form_row(form.difficulty_max) }}
+        </div>
+        <div class="col">
+            <span id="duration-text">Durée de <b>1h</b> à <b>24h</b></span>
+            <div id="slider-range-duration"></div>
+            {{ form_row(form.duration_min) }}
+            {{ form_row(form.duration_max) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.type) }}
+        </div>
+         <div class="col">
+            {{ form_row(form.submit) }}
+        </div>
+    </div>
+{{ form_end(form) }}

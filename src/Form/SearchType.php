@@ -13,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HikingType extends AbstractType
+class SearchType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -29,11 +29,6 @@ class HikingType extends AbstractType
             ->add('return_start_point')
             ->add('region')
             ->add('municipality')
-            ->add('description')
-            ->add('picture', FileType::class,[
-                'data_class' => null,
-                'required' => false,
-            ])
             ->add('difficulty', EntityType::class,[
                 'class' => HikingDifficulty::class,
                 'label' => 'Difficulté',

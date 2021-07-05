@@ -5,30 +5,99 @@ namespace App\Controller;
 use App\Entity\Hiking;
 use App\Entity\HikingType as HikingTypes;
 use App\Entity\HikingDifficulty;
+
 use App\Form\HikingType;
+use App\Form\SearchType;
+
 use App\Repository\HikingRepository;
+
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
- * @Route("/hiking")
+ * @Route("/hiking", name="hiking.")
  */
 class HikingController extends AbstractController
 {
     /**
-     * @Route("/", name="hiking_index", methods={"GET"})
+     * @Route("/", name="index", methods={"GET"})
      */
-    public function index(HikingRepository $hikingRepository): Response
+    public function index(HikingRepository $hikingRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        // $this->search($hikingRepository, $paginator, $request);
+        $donnees = $hikingRepository->findBy([],['created_at' => 'desc']);
+        // $donnees = $this->search($request, $hikingRepository);
+        $hikings = $paginator->paginate($donnees, $request->query->getInt('page', 1), 5);
+
         return $this->render('hiking/index.html.twig', [
-            'hikings' => $hikingRepository->findAll(),
+            'hikings' => $hikings,
+        ]);
+    }
+
+
+    public function search(): Response
+    {
+        $form = $this->createFormBuilder(null)
+            ->setAction($this->generateUrl('hiking.handleSearch'))
+            ->add('search', TextType::class,[
+                'required' => false,
+            ])
+            ->add('difficulty_min', HiddenType::class,[
+                'required' => false,
+            ])
+            ->add('difficulty_max', HiddenType::class,[
+                'required' => false,
+            ])
+            ->add('duration_min', HiddenType::class,[
+                'required' => false,
+            ])
+            ->add('duration_max', HiddenType::class,[
+                'required' => false,
+            ])
+            ->add('type', EntityType::class,[
+                'class' => HikingTypes::class,
+                'label' => 'Type',
+                'placeholder' => 'Sélectionner une type',
+                'mapped' => true,
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class)
+            ->getForm();  
+
+        // if ($form->isSubmitted() && $form->isValid()) {
+        //     dump('coucou'); exit;
+        // }
+
+        // $hikings = $paginator->paginate($donnees, $request->query->getInt('page', 1), 5);
+        return $this->render('hiking/search.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/new", name="hiking_new", methods={"GET","POST"})
+     * @Route("/handleSearch", name="handleSearch")
+     */
+    public function handleSearch(Request $request, HikingRepository $hikingRepository)
+    {
+        $data = $request->request->get('form');
+        dump($data);
+        $hikingRepository->findBySearch($data);
+        dump($request->request->get('form')); exit;
+    }
+
+
+    /**
+     * @Route("/new", name="new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
@@ -60,7 +129,7 @@ class HikingController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="hiking_show", methods={"GET"})
+     * @Route("/{id}/show", name="show", methods={"GET"})
      */
     public function show(Hiking $hiking): Response
     {
@@ -70,7 +139,7 @@ class HikingController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="hiking_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Hiking $hiking): Response
     {
@@ -91,7 +160,7 @@ class HikingController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="hiking_delete", methods={"POST"})
+     * @Route("/{id}/delete", name="delete", methods={"POST"})
      */
     public function delete(Request $request, Hiking $hiking): Response
     {

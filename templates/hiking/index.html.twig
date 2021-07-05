@@ -4,7 +4,7 @@
 
 {% block body %}
     <h1>Hiking index</h1>
-
+    
     <table class="table">
         <thead>
             <tr>
@@ -45,8 +45,8 @@
                 <td>{{ hiking.modifiedAt ? hiking.modifiedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ hiking.createdAt ? hiking.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('hiking_show', {'id': hiking.id}) }}">show</a>
-                    <a href="{{ path('hiking_edit', {'id': hiking.id}) }}">edit</a>
+                    <a href="{{ path('hiking.show', {'id': hiking.id}) }}">show</a>
+                    <a href="{{ path('hiking.edit', {'id': hiking.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
@@ -56,6 +56,46 @@
         {% endfor %}
         </tbody>
     </table>
+    {{ knp_pagination_render(hikings) }}
 
-    <a href="{{ path('hiking_new') }}">Create new</a>
+    <a href="{{ path('hiking.new') }}">Create new</a>
+      
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+  $( function() {
+    let difficulties = ['facile', 'moyenne', 'difficile', 'très difficile'];
+    $( "#slider-range-difficulty" ).slider({
+        range: true,
+        min: 0,
+        max: 3,
+        values: [ 0, 3 ],
+        slide: function( event, ui ) {
+            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+            $('#form_difficulty_min').val(ui.values[0]);
+            $('#form_difficulty_max').val(ui.values[1]);
+            $('#difficulty-text').html('Difficulté de <b>'+difficulties[ui.values[0]]+'</b> à <b>'+difficulties[ui.values[1]]+'</b>');
+        }
+    });
+    $( "#amount" ).val( "$" + $( "#slider-range-difficulty" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-range-difficulty" ).slider( "values", 1 ) );
+    
+    $( "#slider-range-duration" ).slider({
+        range: true,
+        min: 1,
+        max: 24,
+        values: [ 1, 24 ],
+        slide: function( event, ui ) {
+            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+            $('#form_duration_min').val(ui.values[0]);
+            $('#form_duration_max').val(ui.values[1]);
+            $('#duration-text').html('Durée de <b>'+ui.values[0]+'h</b> à <b>'+ui.values[1]+'h</b>');
+        }
+    });
+    $( "#amount" ).val( "$" + $( "#slider-range-duration" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-range-duration" ).slider( "values", 1 ) );
+  } );
+</script>
 {% endblock %}
