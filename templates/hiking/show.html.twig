@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hiking{% endblock %}
+
+{% block body %}
+    <h1>Hiking</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ hiking.id }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ hiking.email }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ hiking.title }}</td>
+            </tr>
+            <tr>
+                <th>Duration</th>
+                <td>{{ hiking.duration }}</td>
+            </tr>
+            <tr>
+                <th>Distance</th>
+                <td>{{ hiking.distance }}</td>
+            </tr>
+            <tr>
+                <th>Elevation_gain</th>
+                <td>{{ hiking.elevationGain }}</td>
+            </tr>
+            <tr>
+                <th>Highest_point</th>
+                <td>{{ hiking.highestPoint }}</td>
+            </tr>
+            <tr>
+                <th>Lowest_point</th>
+                <td>{{ hiking.lowestPoint }}</td>
+            </tr>
+            <tr>
+                <th>Return_start_point</th>
+                <td>{{ hiking.returnStartPoint ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Region</th>
+                <td>{{ hiking.region }}</td>
+            </tr>
+            <tr>
+                <th>Municipality</th>
+                <td>{{ hiking.municipality }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ hiking.description }}</td>
+            </tr>
+            <tr>
+                <th>Picture</th>
+                <td>
+                    <img width="170px" src="
+                        {% if hiking.picture is not null %}
+                            {{ asset('uploads/')~hiking.picture }}
+                        {% else %}
+                            {{ asset('assets/img/nopicture.png') }}
+                        {% endif %}">
+                </td>
+            </tr>
+            <tr>
+                <th>Modified_at</th>
+                <td>{{ hiking.modifiedAt ? hiking.modifiedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Created_at</th>
+                <td>{{ hiking.createdAt ? hiking.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('hiking_index') }}">back to list</a>
+
+    <a href="{{ path('hiking_edit', {'id': hiking.id}) }}">edit</a>
+
+    {{ include('hiking/_delete_form.html.twig') }}
+{% endblock %}
