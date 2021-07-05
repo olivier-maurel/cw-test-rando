@@ -48,13 +48,13 @@ class HikingTypeRepository extends ServiceEntityRepository
     }
     */
 
-    public function findBySearch($value)
-    {
-        return $this->createQueryBuilder('h')
-            ->andWhere('h.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
+    // public function findBySearch($value)
+    // {
+    //     return $this->createQueryBuilder('h')
+    //         ->andWhere('h.exampleField = :val')
+    //         ->setParameter('val', $value)
+    //         ->getQuery()
+    //         ->getOneOrNullResult()
+    //     ;
+    // }
 }

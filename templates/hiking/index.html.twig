@@ -8,20 +8,14 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Email</th>
                 <th>Title</th>
-                <th>Duration</th>
                 <th>Distance</th>
                 <th>Elevation_gain</th>
-                <th>Highest_point</th>
-                <th>Lowest_point</th>
-                <th>Return_start_point</th>
                 <th>Region</th>
                 <th>Municipality</th>
-                <th>Description</th>
                 <th>Picture</th>
-                <th>Modified_at</th>
+                <th>Difficulty</th>
+                <th>Type</th>
                 <th>Created_at</th>
                 <th>actions</th>
             </tr>
@@ -29,20 +23,16 @@
         <tbody>
         {% for hiking in hikings %}
             <tr>
-                <td>{{ hiking.id }}</td>
-                <td>{{ hiking.email }}</td>
                 <td>{{ hiking.title }}</td>
-                <td>{{ hiking.duration }}</td>
                 <td>{{ hiking.distance }}</td>
                 <td>{{ hiking.elevationGain }}</td>
-                <td>{{ hiking.highestPoint }}</td>
-                <td>{{ hiking.lowestPoint }}</td>
-                <td>{{ hiking.returnStartPoint ? 'Yes' : 'No' }}</td>
                 <td>{{ hiking.region }}</td>
                 <td>{{ hiking.municipality }}</td>
-                <td>{{ hiking.description }}</td>
-                <td>{{ hiking.picture }}</td>
-                <td>{{ hiking.modifiedAt ? hiking.modifiedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td><img width="170px" src="{% if hiking.picture is not null %}{{ asset('uploads/')~hiking.picture }}
+                                            {% else %}{{ asset('assets/img/nopicture.png') }}{% endif %}">
+                </td>
+                <td>{{hiking.difficulty}}</td>
+                <td>{{hiking.type}}</td>
                 <td>{{ hiking.createdAt ? hiking.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('hiking.show', {'id': hiking.id}) }}">show</a>
@@ -69,14 +59,14 @@
     let difficulties = ['facile', 'moyenne', 'difficile', 'très difficile'];
     $( "#slider-range-difficulty" ).slider({
         range: true,
-        min: 0,
-        max: 3,
-        values: [ 0, 3 ],
+        min: 1,
+        max: 4,
+        values: [ 1, 4 ],
         slide: function( event, ui ) {
             $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
             $('#form_difficulty_min').val(ui.values[0]);
             $('#form_difficulty_max').val(ui.values[1]);
-            $('#difficulty-text').html('Difficulté de <b>'+difficulties[ui.values[0]]+'</b> à <b>'+difficulties[ui.values[1]]+'</b>');
+            $('#difficulty-text').html('Difficulté de <b>'+difficulties[ui.values[0]-1]+'</b> à <b>'+difficulties[ui.values[1]-1]+'</b>');
         }
     });
     $( "#amount" ).val( "$" + $( "#slider-range-difficulty" ).slider( "values", 0 ) +

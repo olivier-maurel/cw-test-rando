@@ -9,6 +9,7 @@ use App\Entity\HikingType as HikingTypes;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,7 +22,9 @@ class HikingType extends AbstractType
         $builder
             ->add('email')
             ->add('title')
-            ->add('duration')
+            ->add('duration', TimeType::class,[
+                'required' => true,
+            ])
             ->add('distance')
             ->add('elevation_gain')
             ->add('highest_point')
