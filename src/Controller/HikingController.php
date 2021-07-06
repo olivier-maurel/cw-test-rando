@@ -144,7 +144,8 @@ class HikingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $this->checkSetPicture($form['picture'], $hiking, $entityManager);
-            $this->checkSetWayPoints($form->getExtraData()['wayPoints'], $hiking, $entityManager);
+            if (isset($form->getExtraData()['wayPoints']))
+                $this->checkSetWayPoints($form->getExtraData()['wayPoints'], $hiking, $entityManager);
             $hiking->setModifiedAt(new \DateTimeImmutable());
             $entityManager->flush();
 
