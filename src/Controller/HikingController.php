@@ -111,7 +111,7 @@ class HikingController extends AbstractController
             $hiking->setCreatedAt(new \DateTimeImmutable());
             $entityManager->persist($hiking);
             $entityManager->flush();
-
+            $this->addFlash('message', 'Votre message a été transmis, nous vous répondrons dans les meilleurs délais.');
             return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
