@@ -56,6 +56,17 @@
                 <td>{{ hiking.description }}</td>
             </tr>
             <tr>
+                <th>WayPoints</th>
+                <td>
+                {% for point in waypoints %}
+                <tr>
+                    <td>Etape n°{{ point.step }}</td>
+                    <td>{{ point.longitude }}, {{ point.latitude }}</td>
+                </tr>
+                {% endfor %}
+                </td>
+            </tr>
+            <tr>
                 <th>Picture</th>
                 <td>
                     <img width="170px" src="
