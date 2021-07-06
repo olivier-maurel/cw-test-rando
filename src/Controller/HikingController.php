@@ -11,6 +11,7 @@ use App\Form\HikingType;
 use App\Form\SearchType;
 
 use App\Repository\HikingRepository;
+use App\Repository\WayPointRepository;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -104,26 +105,9 @@ class HikingController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            if (!empty($form['picture'])){
-                $file = $form['picture']->getData();
-                $filename = md5(uniqid()).'.'.$file->guessExtension();
-                if ($file->move($this->getParameter('upload_path'),$filename))
-                    $hiking->setPicture($filename);
-            }
 
-            if (isset($form->getExtraData()['wayPoints']) && count($form->getExtraData()['wayPoints']) > 0 ) {
-                foreach ($form->getExtraData()['wayPoints'] as $key => $value) {
-                    $wayPoint = new wayPoint();
-                    $geo = explode(';',$value);
-                    $wayPoint->setHiking($hiking);
-                    $wayPoint->setStep($key+1);
-                    $wayPoint->setLongitude($geo[0]);
-                    $wayPoint->setLatitude($geo[1]);
-                    $entityManager->persist($wayPoint);        
-                }
-            }
-
+            $this->checkSetPicture($form['picture'], $hiking, $entityManager);
+            $this->checkSetWayPoints($form->getExtraData()['wayPoints'], $hiking, $entityManager);
             $hiking->setCreatedAt(new \DateTimeImmutable());
             $entityManager->persist($hiking);
             $entityManager->flush();
@@ -140,30 +124,36 @@ class HikingController extends AbstractController
     /**
      * @Route("/{id}/show", name="show", methods={"GET"})
      */
-    public function show(Hiking $hiking): Response
+    public function show(Hiking $hiking, WayPointRepository $wayPointRepository): Response
     {
         return $this->render('hiking/show.html.twig', [
             'hiking' => $hiking,
+            'waypoints' => $wayPointRepository->findBy(['hiking' => $hiking->getId()])
         ]);
     }
 
     /**
      * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Hiking $hiking): Response
+    public function edit(Request $request, Hiking $hiking, WayPointRepository $wayPointRepository): Response
     {
+        $entityManager = $this->getDoctrine()->getManager();
         $form = $this->createForm(HikingType::class, $hiking);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $this->checkSetPicture($form['picture'], $hiking, $entityManager);
+            $this->checkSetWayPoints($form->getExtraData()['wayPoints'], $hiking, $entityManager);
             $hiking->setModifiedAt(new \DateTimeImmutable());
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager->flush();
 
             return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('hiking/edit.html.twig', [
             'hiking' => $hiking,
+            'waypoints' => $wayPointRepository->findBy(['hiking' => $hiking->getId()]),
             'form' => $form,
         ]);
     }
@@ -180,5 +170,43 @@ class HikingController extends AbstractController
         }
 
         return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /*
+     * Gestion de l'upload d'image.
+     */
+    private function checkSetPicture($data, $hiking, $entityManager)
+    {
+        if ($data->getViewData() != null){
+            $file = $data->getViewData();
+            $filename = md5(uniqid()).'.'.$file->guessExtension();
+            if ($file->move($this->getParameter('upload_path'),$filename)) {
+                $hiking->setPicture($filename);
+                return true;
+            } else return false;
+        } else true;
+    }
+
+    /*
+     * Gestion des coordonnées GPS.
+     */
+    private function checkSetWayPoints($data, $hiking, $entityManager)
+    {
+        if (isset($data) && count($data) > 0 ) {
+            if ($hiking->getId() != null) {
+                $entities = $entityManager->getRepository(WayPoint::class)->findBy(['hiking'=>$hiking->getId()]);
+                foreach ($entities as $entity) {$entityManager->remove($entity);}
+            }
+            foreach ($data as $key => $value) {
+                $wayPoint = new wayPoint();
+                $geo = explode(';',$value);
+                $wayPoint->setHiking($hiking);
+                $wayPoint->setStep($key+1);
+                $wayPoint->setLongitude($geo[0]);
+                $wayPoint->setLatitude($geo[1]);
+                $entityManager->persist($wayPoint);        
+            }
+            return true;
+        } else return false;
     }
 }

@@ -6,6 +6,13 @@
         <button id="geoSubmit" type="button">Géographier</button>
     </div>
     <div id="geoContent"></div>
-    <div id="geoValid"></div>
+    <div id="geoValid">
+        {% for point in waypoints %}
+            <button type="button" class="valited" style="background-color: rgb(140, 217, 140);">
+                Etape n°{{ point.step }}
+                <small>{{ point.longitude }}, {{ point.latitude }}</small>
+            </button>
+        {% endfor %}
+    </div>
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

@@ -47,4 +47,5 @@ class WayPointRepository extends ServiceEntityRepository
         ;
     }
     */
+
 }
