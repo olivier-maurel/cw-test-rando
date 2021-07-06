@@ -7,12 +7,14 @@
     </div>
     <div id="geoContent"></div>
     <div id="geoValid">
+        {% if waypoints is defined %}
         {% for point in waypoints %}
             <button type="button" class="valited" style="background-color: rgb(140, 217, 140);">
                 Etape n°{{ point.step }}
                 <small>{{ point.longitude }}, {{ point.latitude }}</small>
             </button>
         {% endfor %}
+        {% endif %}
     </div>
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

@@ -6,8 +6,13 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use App\Repository\HikingRepository;
 
+
 class HikingMailSubscriber implements EventSubscriberInterface
 {
+    private $mailer;
+    private $hikingRepository;
+    private $route;
+
     public function __construct(\Swift_Mailer $mailer, HikingRepository $hikingRepository)
     {
         $this->mailer           = $mailer;
@@ -28,23 +33,33 @@ class HikingMailSubscriber implements EventSubscriberInterface
         if ($method != 'POST') {
             return;
         }
-        
-        $route  = $event->getRequest()->attributes->get('_route');
-        $id     = $event->getRequest()->attributes->get('id');
-        $hiking = $this->hikingRepository->find($id);
+        $route      = $event->getRequest()->attributes->get('_route');
+        $id         = $event->getRequest()->attributes->get('id');
+        dump($event); exit;
+        $url        = 'http://'.$event->getRequest()->headers->get('host').'/hiking/'.$id.'/show';
+        $link       = '<a href="'.$url.'">'.$url.'</a>';
 
         switch ($route) {
             case 'hiking.new':
-                $title   = 'Une nouvelle randonnée a été créé - '.$hiking->getTitle();
-                $message = '';
+                $newTitle   = $event->getRequest()->request->get('hiking')['title'];
+                $title   = 'Une nouvelle randonnée a été créé - '.$newTitle;
+                $message = 'La randonnée '.$newTitle.' ayant pour ID : '.$id.'vient d\'être créée.<br>Vous pouvez accéder à la randonnée à cette adresse : '.$link;
                 break;
             case 'hiking.edit':
-                $title   = 'Une randonnée a été modifié - '.$hiking->getTitle();
-                $message = '';
+                $newTitle   = $event->getRequest()->request->get('hiking')['title'];
+                $hiking  = $this->hikingRepository->find($id);
+                if ($newTitle != $hiking->getTitle())
+                $changeTitle = $hiking->getTitle().' devenu -> '.$newTitle;
+                else $changeTitle = $hiking->getTitle();
+                $title   = 'Une randonnée a été modifié - '.$changeTitle;
+                $message = 'La randonnée '.$changeTitle.' a été modifiée. (id:'.$id.')<br>Vous pouvez accéder à la randonnée à cette adresse : '.$link;
                 break;
             case 'hiking.delete':
+                $url     = 'http://'.$event->getRequest()->headers->get('host').'/hiking/new';
+                $hiking  = $this->hikingRepository->find($id);
                 $title   = 'Une randonnée a été supprimé - '.$hiking->getTitle();
-                $message = '';
+                $message = 'La randonnée '.$hiking->getTitle().'(id:'.$id.') a été supprimée :(<br>\
+                            Mais vous pouvez toujours en créer une nouvelle à cette adresse :<a href="'.$url.'">'.$url.'</a>';
                 break;
             default:
                 return;
@@ -52,11 +67,11 @@ class HikingMailSubscriber implements EventSubscriberInterface
         }
 
         $message = (new \Swift_Message('Hello Email'))
+        ->setSubject($title)
         ->setFrom('send@example.com')
         ->setTo('omaurel@pm.me')
-        ->setBody($title);
-
-    $this->mailer->send($message);
+        ->setBody($message,'text/html');
+        $this->mailer->send($message);
 
     }
 }
