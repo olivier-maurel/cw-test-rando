@@ -1,4 +1,11 @@
 {{ form_start(form) }}
+
     {{ form_widget(form) }}
+    <div>
+        <input id="geoInput" class="search" type="search" autocomplete="off">
+        <button id="geoSubmit" type="button">Géographier</button>
+    </div>
+    <div id="geoContent"></div>
+    <div id="geoValid"></div>
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

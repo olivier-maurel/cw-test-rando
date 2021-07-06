@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Hiking;
 use App\Entity\HikingType as HikingTypes;
 use App\Entity\HikingDifficulty;
+use App\Entity\WayPoint;
 
 use App\Form\HikingType;
 use App\Form\SearchType;
@@ -98,11 +99,12 @@ class HikingController extends AbstractController
     public function new(Request $request): Response
     {
         $hiking = new Hiking();
+        $entityManager = $this->getDoctrine()->getManager();
         $form = $this->createForm(HikingType::class, $hiking);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            
             if (!empty($form['picture'])){
                 $file = $form['picture']->getData();
                 $filename = md5(uniqid()).'.'.$file->guessExtension();
@@ -110,8 +112,19 @@ class HikingController extends AbstractController
                     $hiking->setPicture($filename);
             }
 
+            if (isset($form->getExtraData()['wayPoints']) && count($form->getExtraData()['wayPoints']) > 0 ) {
+                foreach ($form->getExtraData()['wayPoints'] as $key => $value) {
+                    $wayPoint = new wayPoint();
+                    $geo = explode(';',$value);
+                    $wayPoint->setHiking($hiking);
+                    $wayPoint->setStep($key+1);
+                    $wayPoint->setLongitude($geo[0]);
+                    $wayPoint->setLatitude($geo[1]);
+                    $entityManager->persist($wayPoint);        
+                }
+            }
+
             $hiking->setCreatedAt(new \DateTimeImmutable());
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($hiking);
             $entityManager->flush();
 
