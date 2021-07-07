@@ -1,56 +1,14 @@
 {
     "tracks": [
         {
-            "name": "yyyyyyyyyyyyy",
-            "trkseg": [
-                {
-                    "points": [
-                        {
-                            "lat": 6198038.43,
-                            "lon": 587659.02,
-                            "ele": 1
-                        },
-                        {
-                            "lat": 6427909.2,
-                            "lon": 453250.24,
-                            "ele": 2,
-                            "difference": 17200270.669567548,
-                            "distance": 17200270.669567548
-                        },
-                        {
-                            "lat": 7017079.95,
-                            "lon": 619730.41,
-                            "ele": 3,
-                            "difference": 12428040.547023356,
-                            "distance": 29628311.216590904
-                        },
-                        {
-                            "lat": 6533775.61,
-                            "lon": 908681.1,
-                            "ele": 4,
-                            "difference": 10668653.281700935,
-                            "distance": 40296964.498291835
-                        }
-                    ],
-                    "stats": {
-                        "distance": 40296964.498291835,
-                        "avgSpeed": 0,
-                        "avgPace": 0,
-                        "minAltitude": 1,
-                        "maxAltitude": 4,
-                        "cumulativeElevationGain": 3,
-                        "cumulativeElevationLoss": 0,
-                        "duration": 0
-                    }
-                }
-            ],
+            "name": "Hello boy",
             "stats": {
-                "distance": 40296964.498291835,
+                "distance": 0,
                 "avgSpeed": 0,
                 "avgPace": 0,
-                "minAltitude": 1,
-                "maxAltitude": 4,
-                "cumulativeElevationGain": 3,
+                "minAltitude": 0,
+                "maxAltitude": 0,
+                "cumulativeElevationGain": 0,
                 "cumulativeElevationLoss": 0,
                 "duration": 0
             }
