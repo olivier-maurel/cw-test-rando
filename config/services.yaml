@@ -7,7 +7,6 @@ parameters:
     upload_path: '%kernel.project_dir%/public/uploads/'
     mailer_admin: '%env(ADMIN_MAILER)%'
     mailer_addr: '%env(MAILER_ADDR)%'
-    
 
 services:
     # default configuration for services in *this* file

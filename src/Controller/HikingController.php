@@ -171,6 +171,7 @@ class HikingController extends AbstractController
     public function delete(Request $request, Hiking $hiking): Response
     {
         if ($this->isCsrfTokenValid('delete'.$hiking->getId(), $request->request->get('_token'))) {
+
             $request->attributes->set('id',$hiking->getId());
             $request->attributes->set('title',$hiking->getTitle());
             
