@@ -18,5 +18,3 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
-.env
-/config/packages/swiftmailer.yaml

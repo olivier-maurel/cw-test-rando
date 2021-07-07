@@ -111,7 +111,10 @@ class HikingController extends AbstractController
             $hiking->setCreatedAt(new \DateTimeImmutable());
             $entityManager->persist($hiking);
             $entityManager->flush();
-            $this->addFlash('message', 'Votre message a été transmis, nous vous répondrons dans les meilleurs délais.');
+
+            $request->attributes->set('id',$hiking->getId());
+            $request->attributes->set('title',$hiking->getTitle());
+            
             return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -149,6 +152,9 @@ class HikingController extends AbstractController
             $hiking->setModifiedAt(new \DateTimeImmutable());
             $entityManager->flush();
 
+            $request->attributes->set('id',$hiking->getId());
+            $request->attributes->set('title',$hiking->getTitle());
+
             return $this->redirectToRoute('hiking.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -165,6 +171,9 @@ class HikingController extends AbstractController
     public function delete(Request $request, Hiking $hiking): Response
     {
         if ($this->isCsrfTokenValid('delete'.$hiking->getId(), $request->request->get('_token'))) {
+            $request->attributes->set('id',$hiking->getId());
+            $request->attributes->set('title',$hiking->getTitle());
+            
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($hiking);
             $entityManager->flush();
