@@ -37,6 +37,7 @@
                 <td>
                     <a href="{{ path('hiking.show', {'id': hiking.id}) }}">show</a>
                     <a href="{{ path('hiking.edit', {'id': hiking.id}) }}">edit</a>
+                    <a href="{{ path('hiking.gpx', {'id': hiking.id}) }}">gpxFile</a>
                 </td>
             </tr>
         {% else %}

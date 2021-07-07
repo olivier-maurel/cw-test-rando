@@ -231,6 +231,9 @@
             "config/packages/sensio_framework_extra.yaml"
         ]
     },
+    "sibyx/phpgpx": {
+        "version": "1.1.2"
+    },
     "swiftmailer/swiftmailer": {
         "version": "v6.2.7"
     },

@@ -1,5 +1,5 @@
 swiftmailer:
-    transport:        '%env(MAILER_TRANSPORT)'
+    transport:        '%env(MAILER_TRANSPORT)%'
     username:         '%env(MAILER_ADDR)%'
     password:         '%env(MAILER_PASS)%'
     host:             localhost

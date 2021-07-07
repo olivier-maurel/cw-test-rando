@@ -7,18 +7,22 @@ use App\Entity\HikingType as HikingTypes;
 use App\Entity\HikingDifficulty;
 use App\Entity\WayPoint;
 
-use App\Form\HikingType;
-use App\Form\SearchType;
-
 use App\Repository\HikingRepository;
 use App\Repository\WayPointRepository;
 
+use App\Form\HikingType;
+use App\Form\SearchType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+
+use phpGPX\Models\GpxFile;
+use phpGPX\Models\Point;
+use phpGPX\Models\Segment;
+use phpGPX\Models\Track;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +35,11 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class HikingController extends AbstractController
 {
+    public function __construct()
+    {
+        
+    }
+    
     /**
      * @Route("/", name="index", methods={"GET"})
      */
@@ -219,5 +228,49 @@ class HikingController extends AbstractController
             }
             return true;
         } else return false;
+    }
+
+    /**
+     * @Route("/{id}/gpx", name="gpx", methods={"GET","POST"})
+     */
+    public function generateGpxFile($id)
+    {
+        $waypoints  = $this->getDoctrine()->getManager()->getRepository(WayPoint::class)->findBy(['hiking' => $id]);
+        $hiking     = $this->getDoctrine()->getManager()->getRepository(Hiking::class)->find($id);
+        $data       = [];
+
+        foreach ($waypoints as $key => $val) {
+            $data[] = [
+                'longitude' => $val->getLongitude(),
+                'latitude' => $val->getLatitude(),
+                'step' => $val->getStep(),
+            ];
+        }
+
+        $gpx_file    = new GpxFile();
+        $track       = new Track();
+        $track->name = $hiking->getTitle();
+        $track->type = $hiking->getType();;
+        $segment     = new Segment();
+
+        foreach ($data as $data_point)
+        {
+            $point = new Point(Point::TRACKPOINT);
+            $point->latitude = $data_point['latitude'];
+            $point->longitude = $data_point['longitude'];
+            $point->elevation = $data_point['step'];
+            $segment->points[] = $point;
+        }
+
+        $track->segments[] = $segment;
+        $track->recalculateStats();
+        $gpx_file->tracks[] = $track;
+        $gpx_file->save('CreatingFileFromScratchExample.gpx', \phpGPX\phpGPX::XML_FORMAT);
+        $gpx_file->save('CreatingFileFromScratchExample.json', \phpGPX\phpGPX::JSON_FORMAT);
+
+        header("Content-Type: application/gpx+xml");
+        header("Content-Disposition: attachment; filename=cwtestrando-".$id.".gpx");
+        echo $gpx_file->toXML()->saveXML();
+        exit();
     }
 }
